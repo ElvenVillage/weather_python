@@ -14,13 +14,16 @@ def fetch_weather(city_name: str, APIKEY: str) -> Weather:
         "units": "metric"
     }
     response = requests.get(BASE_URL, params=query).json()
-    weather = Weather(
-        time=datetime.now(),
-        city=city_name,
-        temperature=response["main"]["temp"],
-        feels_like=response["main"]["feels_like"],
-        description=response["weather"][0]["description"],
-        wind=response["wind"]["speed"]
-    )
-    append_logs(weather)
-    return weather
+    if "main" in response:
+        weather = Weather(
+            time=datetime.now(),
+            city=city_name,
+            temperature=response["main"]["temp"],
+            feels_like=response["main"]["feels_like"],
+            description=response["weather"][0]["description"],
+            wind=response["wind"]["speed"]
+        )
+        append_logs(weather)
+        return weather
+    else:
+        raise Exception('Некорректный запрос')

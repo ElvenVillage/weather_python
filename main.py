@@ -16,8 +16,7 @@ def get_my_city():
     return loc.city
 
 
-def draw_weather(stdscr, weather: Weather):
-    start_line = 8
+def draw_weather(stdscr, weather: Weather, start_line: int):
     if weather is not None:
         try:
             stdscr.addstr(start_line, 0, "Текущее время: " +
@@ -38,7 +37,7 @@ def draw_weather(stdscr, weather: Weather):
 
 def draw_city(stdscr, city):
     try:
-        stdscr.addstr(5, 0, "Вы находитесь в городе: ")
+        stdscr.addstr(5, 0, "Текущее местоположение: ")
         stdscr.addstr(6, 0, city)
     except curses.error:
         pass
@@ -51,9 +50,9 @@ def draw_status_bar(stdscr, position: int, size: int):
         pass
 
 
-def draw_input(stdscr):
+def draw_input(stdscr, line):
     curses.echo()
-    return str(stdscr.getstr(7, 0, 15), 'UTF-8')
+    return str(stdscr.getstr(line, 0, 80), 'UTF-8')
 
 
 drawers = {
@@ -64,7 +63,10 @@ drawers = {
 
 def fetch_weather_data(city) -> Weather:
     api_key = getenv("APIKEY")
-    return network.fetch_weather(city, api_key)
+    try:
+        return network.fetch_weather(city, api_key)
+    except Exception:
+        return None
 
 
 def load_logs():
@@ -100,11 +102,11 @@ def main(stdscr):
 
     while True:
         stdscr.clear()
-        drawer_params = {0: weather, 1: logs[selected_log]}
+        drawer_params = {0: (weather, 8), 1: (logs[selected_log], 9)}
         draw_menu(stdscr, selected)
         draw_city(stdscr, city)
         if activated in drawers:
-            drawers[activated](stdscr, drawer_params[activated])
+            drawers[activated](stdscr, *drawer_params[activated])
         if (activated == 1):
             draw_status_bar(stdscr, selected_log + 1, len(logs))
 
@@ -127,7 +129,10 @@ def main(stdscr):
             elif selected == 1:
                 logs = read_logs(limit=10)
             elif selected == 2:
-                city = draw_input(stdscr)
+                input_line = 7
+                if activated == 1:
+                    input_line = 8
+                city = draw_input(stdscr, input_line)
                 curses.setsyx(6, 0)
                 stdscr.clrtoeol()
             elif selected == 3:
@@ -136,5 +141,6 @@ def main(stdscr):
         stdscr.refresh()
 
 
-load_dotenv()
-curses.wrapper(main)
+if __name__ == "__main__":
+    load_dotenv()
+    curses.wrapper(main)
