@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 import network
 from model import Weather
-from db import read_logs
+from db import read_logs, close_db_connection
 
 menu = ["Обновить информацию о погоде",
         "Посмотреть историю запросов", "Изменить город", "Выход"]
@@ -139,6 +139,7 @@ def main(stdscr):
                 break
             activated = selected
         stdscr.refresh()
+    close_db_connection()
 
 
 if __name__ == "__main__":

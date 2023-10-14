@@ -41,6 +41,10 @@ def append_logs(weather: Weather):
     connection.commit()
 
 
+def close_db_connection():
+    connection.close()
+
+
 def read_logs(limit: int):
     query = """
     SELECT * FROM logs ORDER BY query_id DESC LIMIT ?;
