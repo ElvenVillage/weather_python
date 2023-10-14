@@ -98,7 +98,7 @@ def main(stdscr):
 
     city = get_my_city()
     weather = None
-    logs = [None for i in range(10)]
+    logs = [None] * 10
 
     while True:
         stdscr.clear()

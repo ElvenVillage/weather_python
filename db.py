@@ -51,7 +51,7 @@ def read_logs(limit: int):
     """
     cur.execute(query, (str(limit),))
     rows = cur.fetchall()
-    return list(map(lambda row: Weather(
+    result = list(map(lambda row: Weather(
         time=datetime.strptime(row[1], datetime_format),
         city=row[2],
         temperature=row[3],
@@ -59,6 +59,10 @@ def read_logs(limit: int):
         description=row[5],
         wind=row[6]
     ), rows))
+    if len(result) < 10:
+        for i in range(10 - len(result)):
+            result.append(None)
+    return result
 
 
 create_database()
