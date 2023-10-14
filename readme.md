@@ -1,3 +1,6 @@
+## weather_app
+![Alt text](./screenshot.png?raw=true "Интерфейс")
+
 ## Информация о погоде
 Используем API OpenWeatherMap
 ```
