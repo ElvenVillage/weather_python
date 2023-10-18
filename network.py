@@ -1,7 +1,6 @@
 import requests
-from datetime import datetime
+import datetime
 from model import Weather
-from db import append_logs
 
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
@@ -15,15 +14,16 @@ def fetch_weather(city_name: str, APIKEY: str) -> Weather:
     }
     response = requests.get(BASE_URL, params=query).json()
     if "main" in response:
+        time = datetime.datetime.fromtimestamp(response["dt"], datetime.timezone.utc)
+        timezone = datetime.timezone(datetime.timedelta(seconds=response["timezone"]))
         weather = Weather(
-            time=datetime.now(),
+            time=time.astimezone(timezone),
             city=city_name,
             temperature=response["main"]["temp"],
             feels_like=response["main"]["feels_like"],
             description=response["weather"][0]["description"],
             wind=response["wind"]["speed"]
         )
-        append_logs(weather)
         return weather
     else:
         raise Exception('Некорректный запрос')
